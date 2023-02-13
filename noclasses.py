@@ -15,10 +15,10 @@ if __name__ == '__main__':
     while True:
         real_x = player_x
         real_y = -player_y
-        for x in range(10):
+        for y in range(5):
             screen.append([])
-            for y in list(' ' * 10):
-                screen[x].append(y)
+            for x in list(' ' * 10):
+                screen[y].append(x)
         screen[real_y][real_x] = '@'
         system('cls')
         printAsScreen(screen)

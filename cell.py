@@ -6,3 +6,9 @@ class Cell:
         self.x = x
         self.y = y
         self.contents = contents
+
+    def __str__(self):
+        return str(self.contents)
+
+    def add(self, thing):
+        self.contents.append(thing)
