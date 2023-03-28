@@ -546,7 +546,7 @@ class MainGameEventHandler(EventHandler):
             return InventoryActivateHandler(self.engine)
         elif key == tcod.event.K_y:
             return InventoryDropHandler(self.engine)
-        elif key == tcod.event.K_c:
+        elif key == tcod.event.K_u:
             return CharacterScreenEventHandler(self.engine)
         elif key == tcod.event.K_SLASH:
             return LookHandler(self.engine)
