@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from tcod.console import Console
 from tcod.map import compute_fov
 
+import color
 import exceptions
 from message_log import MessageLog
 import render_functions
@@ -41,7 +42,7 @@ class Engine:
             radius=8,
         )
         # If a tile is "visible" it should be added to "explored".
-        self.game_map.explored |= self.game_map.visible
+        self.game_map.explored |= self.game_map.visible #.tiles["transparent"] TODO to see all rooms
 
     def render(self, console: Console) -> None:
         self.game_map.render(console)
@@ -53,7 +54,23 @@ class Engine:
             current_value=self.player.fighter.hp,
             maximum_value=self.player.fighter.max_hp,
             total_width=20,
+            x=0,
+            y=44,
+            title="HP",
+            bar_color=color.bar_filled
         )
+
+        if self.player.equipment.gun is not None:
+            render_functions.render_bar(
+                console=console,
+                current_value=self.player.equipment.gun.equippable.ammo,
+                maximum_value=self.player.equipment.gun.equippable.max_ammo,
+                total_width=20,
+                x=0,
+                y=45,
+                title="Ammo",
+                bar_color=color.bar_ammo
+            )
 
         render_functions.render_dungeon_level(
             console=console,

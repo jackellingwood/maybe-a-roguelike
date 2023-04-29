@@ -39,7 +39,7 @@ class Consumable(BaseComponent):
         if isinstance(inventory, components.inventory.Inventory):
             inventory.items.remove(entity)
 
-class ConfusionConsumable(Consumable):
+class TacticalFlashlightConsumable(Consumable):
     def __init__(self, number_of_turns: int):
         self.number_of_turns = number_of_turns
 
@@ -61,7 +61,7 @@ class ConfusionConsumable(Consumable):
         if not target:
             raise Impossible("You must select an enemy to target.")
         if target is consumer:
-            raise Impossible("You cannot confuse yourself!")
+            raise Impossible("You cannot flash yourself!")
 
         self.engine.message_log.add_message(
             f"The eyes of the {target.name} look vacant, as it starts to stumble around!",
@@ -83,14 +83,14 @@ class HealingConsumable(Consumable):
 
         if amount_recovered > 0:
             self.engine.message_log.add_message(
-                f"You consume the {self.parent.name}, and recover {amount_recovered} HP!",
+                f"You use the {self.parent.name}, and recover {amount_recovered} HP!",
                 color.health_recovered,
             )
             self.consume()
         else:
             raise Impossible(f"Your health is already full.")
 
-class FireballDamageConsumable(Consumable):
+class GrenadeDamageConsumable(Consumable):
     def __init__(self, damage: int, radius: int):
         self.damage = damage
         self.radius = radius
@@ -115,7 +115,7 @@ class FireballDamageConsumable(Consumable):
         for actor in self.engine.game_map.actors:
             if actor.distance(*target_xy) <= self.radius:
                 self.engine.message_log.add_message(
-                    f"The {actor.name} is engulfed in a fiery explosion, taking {self.damage} damage!"
+                    f"The {actor.name} is engulfed in a shrapnel explosion, taking {self.damage} damage!"
                 )
                 actor.fighter.take_damage(self.damage)
                 targets_hit = True
@@ -124,7 +124,7 @@ class FireballDamageConsumable(Consumable):
             raise Impossible("There are no targets in the radius.")
         self.consume()
 
-class LightningDamageConsumable(Consumable):
+class ShurikenDamageConsumable(Consumable):
     def __init__(self, damage: int, maximum_range: int):
         self.damage = damage
         self.maximum_range = maximum_range
@@ -144,9 +144,29 @@ class LightningDamageConsumable(Consumable):
 
         if target:
             self.engine.message_log.add_message(
-                f"A lighting bolt strikes the {target.name} with a loud thunder, for {self.damage} damage!"
+                f"You throw a shuriken at the {target.name} striking it for {self.damage} damage!"
             )
             target.fighter.take_damage(self.damage)
             self.consume()
         else:
             raise Impossible("No enemy is close enough to strike.")
+
+class AmmoConsumable(Consumable):
+    def __init__(self, count: int):
+        self.count = count
+
+    def activate(self, action: actions.ItemAction) -> None:
+        consumer = action.entity
+        if consumer.equipment.gun.equippable is not None:
+            if consumer.equipment.gun.equippable.ammo < consumer.equipment.gun.equippable.max_ammo:
+                if consumer.equipment.gun.equippable.ammo + self.count > consumer.equipment.gun.equippable.max_ammo:
+                    consumer.equipment.gun.equippable.ammo = consumer.equipment.gun.equippable.max_ammo
+                else:
+                    consumer.equipment.gun.equippable.ammo += self.count
+                self.engine.message_log.add_message(
+                    f"You reloaded your {consumer.equipment.gun.name}!"
+                )
+            else:
+                raise Impossible("This gun is fully loaded.")
+        else:
+            raise Impossible("Equip a gun to reload it.")

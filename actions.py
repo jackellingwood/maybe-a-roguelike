@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from typing import Optional, Tuple, TYPE_CHECKING
 
 import color
@@ -82,7 +83,11 @@ class MeleeAction(ActionWithDirection):
 
         damage = self.entity.fighter.power - target.fighter.defense
 
-        attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
+        if self.entity.equipment.melee is not None:
+            attack_desc = f"{self.entity.name.capitalize()} attacks {target.name} with {self.entity.equipment.melee.name}"
+            self.entity.equipment.melee.equippable.decrement_durability()
+        else:
+            attack_desc = f"{self.entity.name.capitalize()} attacks {target.name}"
         if self.entity is self.engine.player:
             attack_color = color.player_atk
         else:
@@ -123,6 +128,66 @@ class BumpAction(ActionWithDirection):
 
         else:
             return MovementAction(self.entity, self.dx, self.dy).perform()
+
+class RangedAction(Action):
+    def __init__(
+        self, entity: Actor, accurate: bool, target_xy: Optional[Tuple[int, int]] = None,
+    ):
+        super().__init__(entity)
+        if not target_xy:
+            target_xy = entity.x, entity.y
+        self.target_xy = target_xy
+        self.accurate = accurate
+
+    @property
+    def target_actor(self) -> Optional[Actor]:
+        """Return the actor at this actions destination."""
+        return self.engine.game_map.get_actor_at_location(*self.target_xy)
+
+    def perform(self) -> None:
+        target = self.target_actor
+
+        if not target or not self.engine.game_map.visible[target.x, target.y]:
+            raise exceptions.Impossible("Nothing to attack.")
+        if target is self.entity:
+            raise exceptions.Impossible("Can't take the easy way out, I have a mission to do.")
+        if self.entity.equipment.gun is None:
+            raise exceptions.Impossible("Finger guns can't cause any real damage.")
+        if not self.entity.equipment.gun.equippable.ammo > 0:
+            raise exceptions.Impossible("You're out of ammo.")
+
+        dx = target.x - self.entity.x
+        dy = target.y - self.entity.y
+        distance = max(abs(dx), abs(dy))  # Chebyshev distance.
+
+        if self.accurate:
+            hit_chance = 1.0
+        else:
+            hit_chance = pow(1.15, -distance + 1)
+
+        self.entity.equipment.gun.equippable.decrement_ammo()
+        attack_desc = f"{self.entity.name.capitalize()} shoots at the {target.name}"
+        if self.entity is self.engine.player:
+            attack_color = color.player_atk
+        else:
+            attack_color = color.enemy_atk
+        if random.random() < hit_chance:
+            damage = self.entity.fighter.ranged_power - target.fighter.defense
+
+            if damage > 0:
+                self.engine.message_log.add_message(
+                    f"{attack_desc} for {damage} hit points.", attack_color
+                )
+                target.fighter.hp -= damage
+            else:
+                self.engine.message_log.add_message(
+                    f"{attack_desc} but does no damage.", attack_color
+                )
+        else:
+            self.engine.message_log.add_message(
+                f"{attack_desc} but misses!", attack_color
+            )
+
 
 class PickupAction(Action):
     """Take an item and add it to the inventory, if there is room for it."""

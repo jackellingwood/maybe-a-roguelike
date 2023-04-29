@@ -49,17 +49,27 @@ def new_game() -> Engine:
         "Hello and welcome, adventurer, to yet another dungeon!", color.welcome_text
     )
 
-    dagger = copy.deepcopy(entity_factories.dagger)
-    leather_armor = copy.deepcopy(entity_factories.leather_armor)
+    brassknuckles = copy.deepcopy(entity_factories.brassknuckles)
+    knife = copy.deepcopy(entity_factories.knife)
+    pistol = copy.deepcopy(entity_factories.pistol)
+    light_armor = copy.deepcopy(entity_factories.light_armor)
 
-    dagger.parent = player.inventory
-    leather_armor.parent = player.inventory
+    brassknuckles.parent = player.inventory
+    knife.parent = player.inventory
+    pistol.parent = player.inventory
+    light_armor.parent = player.inventory
 
-    player.inventory.items.append(dagger)
-    player.equipment.toggle_equip(dagger, add_message=False)
+    # player.inventory.items.append(brassknuckles)
+    # player.equipment.toggle_equip(brassknuckles, add_message=False)
 
-    player.inventory.items.append(leather_armor)
-    player.equipment.toggle_equip(leather_armor, add_message=False)
+    player.inventory.items.append(knife)
+    player.equipment.toggle_equip(knife, add_message=False)
+
+    player.inventory.items.append(pistol)
+    player.equipment.toggle_equip(pistol, add_message=False)
+
+    player.inventory.items.append(light_armor)
+    player.equipment.toggle_equip(light_armor, add_message=False)
 
     return engine
 

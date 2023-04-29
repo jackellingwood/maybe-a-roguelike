@@ -1,2 +1,5 @@
 # Saved games
 *.sav
+
+# Pycaches
+*.pyc

@@ -1,4 +1,6 @@
-from components.ai import HostileEnemy
+import random
+
+from components.ai import HostileEnemy, WanderingEnemy
 from components import consumable, equippable
 from components.equipment import Equipment
 from components.fighter import Fighter
@@ -17,65 +19,103 @@ player = Actor(
     level=Level(level_up_base=200),
 )
 
-orc = Actor(
-    char="o",
+grunt = Actor(
+    char="G",
     color=(63, 127, 63),
-    name="Orc",
-    ai_cls=HostileEnemy,
+    name="Grunt",
+    ai_cls=WanderingEnemy,
     equipment=Equipment(),
     fighter=Fighter(hp=10, base_defense=0, base_power=3),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35),
 )
-troll = Actor(
-    char="T",
+brute = Actor(
+    char="B",
     color=(0, 127, 0),
-    name="Troll",
-    ai_cls=HostileEnemy,
+    name="Brute",
+    ai_cls=WanderingEnemy,
     equipment=Equipment(),
     fighter=Fighter(hp=16, base_defense=1, base_power=4),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=100),
 )
+marvin = Actor(
+    char="M",
+    color=(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)),
+    name="Marvin",
+    ai_cls=WanderingEnemy,
+    equipment=Equipment(),
+    fighter=Fighter(hp=1, base_defense=1, base_power=1),
+    inventory=Inventory(capacity=0),
+    level=Level(xp_given=0),
+)
 
-confusion_scroll = Item(
-    char="~",
+tactical_flashlight = Item(
+    char="═",
     color=(207, 63, 255),
-    name="Confusion Scroll",
-    consumable=consumable.ConfusionConsumable(number_of_turns=10),
+    name="Tactical Flashlight",
+    consumable=consumable.TacticalFlashlightConsumable(number_of_turns=10),
 )
-fireball_scroll = Item(
-    char="~",
-    color=(255, 0, 0),
-    name="Fireball Scroll",
-    consumable=consumable.FireballDamageConsumable(damage=12, radius=3),
+grenade = Item(
+    char="◉",
+    color=(0, 255, 0),
+    name="Grenade",
+    consumable=consumable.GrenadeDamageConsumable(damage=12, radius=3),
 )
-health_potion = Item(
+stimpak = Item(
     char="!",
     color=(127, 0, 255),
-    name="Health Potion",
+    name="Stimpak",
     consumable=consumable.HealingConsumable(amount=4),
 )
-lightning_scroll = Item(
-    char="~",
-    color=(255, 255, 0),
-    name="Lightning Scroll",
-    consumable=consumable.LightningDamageConsumable(damage=20, maximum_range=5),
+shuriken = Item(
+    char="*",
+    color=(60, 60, 60),
+    name="Shuriken",
+    consumable=consumable.ShurikenDamageConsumable(damage=20, maximum_range=5),
+)
+ammo_box = Item(
+    char="#",
+    color=(50, 127, 50),
+    name="Ammo Box",
+    consumable=consumable.AmmoConsumable(12),
 )
 
-dagger = Item(
-    char="/", color=(0, 191, 255), name="Dagger", equippable=equippable.Dagger()
+brassknuckles = Item(
+    char="}",
+    color=(0, 191, 255),
+    name="Brass Knuckles",
+    equippable=equippable.BrassKnuckles()
+)
+knife = Item(
+    char="/",
+    color=(0, 191, 255),
+    name="Knife",
+    equippable=equippable.Knife()
 )
 
-sword = Item(char="/", color=(0, 191, 255), name="Sword", equippable=equippable.Sword())
+pistol = Item(
+    char="p",
+    color=(40, 40, 40),
+    name="Pistol",
+    equippable=equippable.Pistol()
+)
+rifle = Item(
+    char="r",
+    color=(40, 40, 40),
+    name="Rifle",
+    equippable=equippable.Rifle()
+)
 
-leather_armor = Item(
+light_armor = Item(
     char="[",
     color=(139, 69, 19),
-    name="Leather Armor",
-    equippable=equippable.LeatherArmor(),
+    name="Light Armor",
+    equippable=equippable.LightArmor()
 )
-
-chain_mail = Item(
-    char="[", color=(139, 69, 19), name="Chain Mail", equippable=equippable.ChainMail()
+heavy_armor = Item(
+    char="[",
+    color=(139, 69, 19),
+    name="Heavy Armor",
+    equippable=equippable.HeavyArmor()
 )

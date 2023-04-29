@@ -112,3 +112,50 @@ class HostileEnemy(BaseAI):
             ).perform()
 
         return WaitAction(self.entity).perform()
+
+class WanderingEnemy(BaseAI):
+    def __init__(self, entity: Actor):
+        super().__init__(entity)
+        self.path: List[Tuple[int, int]] = []
+
+        self.start_x = entity.x
+        self.start_y = entity.y
+
+    def perform(self) -> None:
+        target = self.engine.player
+        dx = target.x - self.entity.x
+        dy = target.y - self.entity.y
+        distance = max(abs(dx), abs(dy))  # Chebyshev distance.
+
+        if self.engine.game_map.visible[self.entity.x, self.entity.y]:
+            if distance <= 1:
+                return MeleeAction(self.entity, dx, dy).perform()
+
+            self.path = self.get_path_to(target.x, target.y)
+
+        if self.path:
+            dest_x, dest_y = self.path.pop(0)
+        else:
+            goal_x = random.randint(0, self.engine.game_map.width)
+            goal_y = random.randint(0, self.engine.game_map.height)
+
+            while not (self.engine.game_map.in_bounds(goal_x, goal_y) and self.engine.game_map.tiles["walkable"][goal_x, goal_y] and not self.engine.game_map.get_blocking_entity_at_location(goal_x, goal_y)):
+                goal_x = random.randint(0, self.engine.game_map.width)
+                goal_y = random.randint(0, self.engine.game_map.height)
+
+            self.path = self.get_path_to(goal_x, goal_y)
+
+            dest_x, dest_y = self.path.pop(0)
+
+        return MovementAction(
+            self.entity, dest_x - self.entity.x, dest_y - self.entity.y,
+        ).perform()
+
+
+
+
+
+
+
+
+

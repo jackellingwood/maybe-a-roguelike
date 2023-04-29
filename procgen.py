@@ -6,12 +6,17 @@ from typing import Dict, Iterator, List, Tuple, TYPE_CHECKING
 import tcod
 
 import entity_factories
+from components.ai import WanderingEnemy
+from components.equipment import Equipment
+from components.fighter import Fighter
+from components.inventory import Inventory
+from components.level import Level
 from game_map import GameMap
 import tile_types
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Entity
+    from entity import Entity, Actor
 
 max_items_by_floor = [
     (1, 1),
@@ -25,17 +30,18 @@ max_monsters_by_floor = [
 ]
 
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.health_potion, 35)],
-    2: [(entity_factories.confusion_scroll, 10)],
-    4: [(entity_factories.lightning_scroll, 25), (entity_factories.sword, 5)],
-    6: [(entity_factories.fireball_scroll, 25), (entity_factories.chain_mail, 15)],
+    0: [(entity_factories.stimpak, 35), (entity_factories.ammo_box, 10)],
+    1: [(entity_factories.ammo_box, 15), (entity_factories.brassknuckles, 5)],
+    2: [(entity_factories.tactical_flashlight, 25), (entity_factories.brassknuckles, 10), (entity_factories.light_armor, 10)],
+    4: [(entity_factories.shuriken, 40), (entity_factories.knife, 15), (entity_factories.pistol, 15)],
+    6: [(entity_factories.grenade, 30), (entity_factories.heavy_armor, 25), (entity_factories.rifle, 25)],
 }
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.orc, 80)],
-    3: [(entity_factories.troll, 15)],
-    5: [(entity_factories.troll, 30)],
-    7: [(entity_factories.troll, 60)],
+    0: [(entity_factories.grunt, 80)],
+    3: [(entity_factories.brute, 15)],
+    5: [(entity_factories.brute, 30)],
+    7: [(entity_factories.brute, 60)],
 }
 
 
@@ -117,6 +123,7 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int,) 
     monsters: List[Entity] = get_entities_at_random(
         enemy_chances, number_of_monsters, floor_number
     )
+
     items: List[Entity] = get_entities_at_random(
         item_chances, number_of_items, floor_number
     )
@@ -126,6 +133,17 @@ def place_entities(room: RectangularRoom, dungeon: GameMap, floor_number: int,) 
         y = random.randint(room.y1 + 1, room.y2 - 1)
 
         if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
+            # marvin = Actor(
+            #     char="M",
+            #     color=(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)),
+            #     name="Marvin",
+            #     ai_cls=WanderingEnemy,
+            #     equipment=Equipment(),
+            #     fighter=Fighter(hp=1, base_defense=1, base_power=1),
+            #     inventory=Inventory(capacity=0),
+            #     level=Level(xp_given=0),
+            # )
+            # marvin.place(x, y, dungeon)
             entity.spawn(dungeon, x, y)
 
 def tunnel_between(

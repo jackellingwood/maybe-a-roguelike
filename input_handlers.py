@@ -414,7 +414,7 @@ class SelectIndexHandler(AskUserEventHandler):
         """Sets the cursor to the player when this handler is constructed."""
         super().__init__(engine)
         player = self.engine.player
-        engine.mouse_location = player.x, player.y
+        # engine.mouse_location = player.x, player.y
 
     def on_render(self, console: tcod.Console) -> None:
         """Highlight the tile under the cursor."""
@@ -482,6 +482,33 @@ class SingleRangedAttackHandler(SelectIndexHandler):
 
     def on_index_selected(self, x: int, y: int) -> Optional[Action]:
         return self.callback((x, y))
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+
+        player = self.engine.player
+        key = event.sym
+        if key == tcod.event.K_SPACE:
+            return MainGameEventHandler(self.engine)
+        elif key in MOVE_KEYS:
+            dx, dy = MOVE_KEYS[key]
+            action = BumpAction(player, dx, dy)
+        elif key in WAIT_KEYS:
+            action = WaitAction(player)
+        elif key == tcod.event.K_ESCAPE:
+            raise SystemExit()
+        elif key == tcod.event.K_v:
+            return HistoryViewer(self.engine)
+        elif key == tcod.event.K_t:
+            action = PickupAction(player)
+
+        elif key == tcod.event.K_i:
+            return InventoryActivateHandler(self.engine)
+        elif key == tcod.event.K_y:
+            return InventoryDropHandler(self.engine)
+        elif key == tcod.event.K_c:
+            return CharacterScreenEventHandler(self.engine)
+        elif key == tcod.event.K_SLASH:
+            return LookHandler(self.engine)
 
 class AreaRangedAttackHandler(SelectIndexHandler):
     """Handles targeting an area within a given radius. Any entity within the area will be affected."""
@@ -551,8 +578,17 @@ class MainGameEventHandler(EventHandler):
         elif key == tcod.event.K_SLASH:
             return LookHandler(self.engine)
 
+        elif key == tcod.event.K_SPACE:
+            return SingleRangedAttackHandler(
+                self.engine,
+                callback=lambda xy: actions.RangedAction(self.engine.player, False, xy)
+            )
+
         # No valid key was pressed
         return action
+
+    # def ev_mousemotion(self, event: tcod.event.MouseMotion) -> SingleRangedAttackHandler:
+    #     return SingleRangedAttackHandler(self.engine, callback=lambda xy: actions.RangedAction(self.engine.player, xy))
 
 class GameOverEventHandler(EventHandler):
     def on_quit(self) -> None:
