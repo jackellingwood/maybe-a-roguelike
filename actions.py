@@ -102,6 +102,8 @@ class MeleeAction(ActionWithDirection):
             self.engine.message_log.add_message(
                 f"{attack_desc} but does no damage.", attack_color
             )
+        if target.equipment.armor is not None:
+            target.equipment.armor.equippable.decrement_durability()
 
 
 class MovementAction(ActionWithDirection):
@@ -137,7 +139,6 @@ class RangedAction(Action):
         if not target_xy:
             target_xy = entity.x, entity.y
         self.target_xy = target_xy
-        self.accurate = accurate
 
     @property
     def target_actor(self) -> Optional[Actor]:
@@ -160,12 +161,14 @@ class RangedAction(Action):
         dy = target.y - self.entity.y
         distance = max(abs(dx), abs(dy))  # Chebyshev distance.
 
-        if self.accurate:
+        if self.entity.equipment.gun.equippable.fully_accurate:
             hit_chance = 1.0
         else:
             hit_chance = pow(1.15, -distance + 1)
 
         self.entity.equipment.gun.equippable.decrement_ammo()
+        self.entity.equipment.gun.equippable.decrement_durability()
+
         attack_desc = f"{self.entity.name.capitalize()} shoots at the {target.name}"
         if self.entity is self.engine.player:
             attack_color = color.player_atk
@@ -183,6 +186,8 @@ class RangedAction(Action):
                 self.engine.message_log.add_message(
                     f"{attack_desc} but does no damage.", attack_color
                 )
+            if target.equipment.armor is not None:
+                target.equipment.armor.equippable.decrement_durability()
         else:
             self.engine.message_log.add_message(
                 f"{attack_desc} but misses!", attack_color

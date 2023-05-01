@@ -35,6 +35,8 @@ item_chances: Dict[int, List[Tuple[Entity, int]]] = {
     2: [(entity_factories.tactical_flashlight, 25), (entity_factories.brassknuckles, 10), (entity_factories.light_armor, 10)],
     4: [(entity_factories.shuriken, 40), (entity_factories.knife, 15), (entity_factories.pistol, 15)],
     6: [(entity_factories.grenade, 30), (entity_factories.heavy_armor, 25), (entity_factories.rifle, 25)],
+
+    # 0: [(entity_factories.grenade, 999), (entity_factories.shuriken, 999)],
 }
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {

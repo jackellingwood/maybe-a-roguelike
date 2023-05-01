@@ -42,6 +42,8 @@ def new_game() -> Engine:
         map_height=map_height,
     )
 
+    starting_floor = 1
+    engine.game_world.current_floor = starting_floor - 1
     engine.game_world.generate_floor()
     engine.update_fov()
 
@@ -53,6 +55,10 @@ def new_game() -> Engine:
     knife = copy.deepcopy(entity_factories.knife)
     pistol = copy.deepcopy(entity_factories.pistol)
     light_armor = copy.deepcopy(entity_factories.light_armor)
+
+    lightsaber = copy.deepcopy(entity_factories.lightsaber)
+    bfg = copy.deepcopy(entity_factories.bfg)
+    plot_armor = copy.deepcopy(entity_factories.plot_armor)
 
     brassknuckles.parent = player.inventory
     knife.parent = player.inventory
@@ -70,6 +76,17 @@ def new_game() -> Engine:
 
     player.inventory.items.append(light_armor)
     player.equipment.toggle_equip(light_armor, add_message=False)
+
+
+    # player.inventory.items.append(lightsaber)
+    # player.equipment.toggle_equip(lightsaber, add_message=False)
+    #
+    # player.inventory.items.append(bfg)
+    # player.equipment.toggle_equip(bfg, add_message=False)
+    #
+    # player.inventory.items.append(plot_armor)
+    # player.equipment.toggle_equip(plot_armor, add_message=False)
+
 
     return engine
 

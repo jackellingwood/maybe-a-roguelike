@@ -93,10 +93,10 @@ class GameMap:
 
         for entity in entities_sorted_for_rendering:
             # Only print entities that are in the FOV
-            # if self.visible[entity.x, entity.y]: #TODO for debugging
-            console.print(
-                x=entity.x, y=entity.y, string=entity.char, fg=entity.color
-            )
+            if self.visible[entity.x, entity.y]: #TODO for debugging
+                console.print(
+                    x=entity.x, y=entity.y, string=entity.char, fg=entity.color
+                )
 
 class GameWorld:
     """

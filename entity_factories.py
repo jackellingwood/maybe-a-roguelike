@@ -28,6 +28,7 @@ grunt = Actor(
     fighter=Fighter(hp=10, base_defense=0, base_power=3),
     inventory=Inventory(capacity=0),
     level=Level(xp_given=35),
+
 )
 brute = Actor(
     char="B",
@@ -58,7 +59,7 @@ tactical_flashlight = Item(
 )
 grenade = Item(
     char="◉",
-    color=(0, 255, 0),
+    color=(40, 127, 40),
     name="Grenade",
     consumable=consumable.GrenadeDamageConsumable(damage=12, radius=3),
 )
@@ -118,4 +119,26 @@ heavy_armor = Item(
     color=(139, 69, 19),
     name="Heavy Armor",
     equippable=equippable.HeavyArmor()
+)
+
+# very overpowered weapons meant for debugging only (so that I don't have to get good at my own game to test it)
+lightsaber = Item(
+    char="/",
+    color=(0, 191, 255),
+    name="Lightsaber",
+    equippable=equippable.Lightsaber()
+)
+
+bfg = Item(
+    char="b",
+    color=(40, 40, 40),
+    name="BFG",
+    equippable=equippable.BFG()
+)
+
+plot_armor = Item(
+    char="[",
+    color=(40, 40, 40),
+    name="Plot Armor",
+    equippable=equippable.PlotArmor()
 )

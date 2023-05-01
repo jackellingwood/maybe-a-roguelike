@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import color
 import components.inventory
 from components.base_component import BaseComponent
 from equipment_types import EquipmentType
@@ -21,15 +22,19 @@ class Equippable(BaseComponent):
         defense_bonus: int = 0,
         durability: int = 255,
         max_ammo: int = 255,
+        fully_accurate: bool = False
     ):
         self.equipment_type = equipment_type
 
         self.power_bonus = power_bonus
         self.ranged_bonus = ranged_bonus
         self.defense_bonus = defense_bonus
+
         self.durability = durability
+
         self.max_ammo = max_ammo
         self.ammo = max_ammo
+        self.fully_accurate = fully_accurate
 
     def decrement_ammo(self):
         if self.ammo > 0:
@@ -37,7 +42,7 @@ class Equippable(BaseComponent):
 
     def decrement_durability(self):
         if self.durability > 1:
-            self.durability = self.durability - 1
+            self.durability -= 1
         else:
             self.break_equippable()
 
@@ -45,8 +50,8 @@ class Equippable(BaseComponent):
         entity = self.parent
         inventory = entity.parent
         if isinstance(inventory, components.inventory.Inventory):
-            self.engine.message_log.add_message(f"Your {entity.name} breaks!")
-            entity.parent.parent.equipment.unequip_from_slot("melee", False)
+            self.engine.message_log.add_message(f"Your {entity.name} breaks!", color.red)
+            entity.parent.parent.equipment.unequip_from_slot(entity.equippable.equipment_type.name.lower(), False)
             inventory.items.remove(entity)
 
 
@@ -61,11 +66,11 @@ class Knife(Equippable):
 
 class Pistol(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=2, max_ammo=6)
+        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=2, max_ammo=6, durability=24)
 
 class Rifle(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=4, max_ammo=12)
+        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=4, max_ammo=12, durability=36)
 
 
 class LightArmor(Equippable):
@@ -75,3 +80,16 @@ class LightArmor(Equippable):
 class HeavyArmor(Equippable):
     def __init__(self) -> None:
         super().__init__(equipment_type=EquipmentType.ARMOR, defense_bonus=3, durability=15)
+
+# very overpowered weapons meant for debugging only (so that I don't have to get good at my own game to test it)
+class Lightsaber(Equippable):
+    def __init__(self) -> None:
+        super().__init__(equipment_type=EquipmentType.MELEE, power_bonus=9999, durability=9999)
+
+class BFG(Equippable):
+    def __init__(self) -> None:
+        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=9999, max_ammo=9999, fully_accurate=True, durability=9999)
+
+class PlotArmor(Equippable):
+    def __init__(self) -> None:
+        super().__init__(equipment_type=EquipmentType.ARMOR, defense_bonus=9999, durability=9999)
