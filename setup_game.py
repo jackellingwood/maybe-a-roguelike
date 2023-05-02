@@ -48,7 +48,7 @@ def new_game() -> Engine:
     engine.update_fov()
 
     engine.message_log.add_message(
-        "Hello and welcome, adventurer, to yet another dungeon!", color.welcome_text
+        "You enter the Hostile Corridors! Good luck, stay alive.", color.welcome_text
     )
 
     brassknuckles = copy.deepcopy(entity_factories.brassknuckles)
@@ -106,31 +106,32 @@ class MainMenu(input_handlers.BaseEventHandler):
         console.draw_semigraphics(background_image, 0, 0)
 
         console.print(
-            console.width // 2,
+            2,
             console.height // 2 - 4,
             "maybe-a-roguelike",
             fg=color.menu_title,
-            alignment=tcod.CENTER,
+            bg=tcod.black,
+            alignment=tcod.LEFT,
         )
-        console.print(
-            console.width // 2,
-            console.height - 2,
-            "By Jack",
-            fg=color.menu_title,
-            alignment=tcod.CENTER,
-        )
+        # console.print(
+        #     console.width // 2,
+        #     console.height - 2,
+        #     "By Jack",
+        #     fg=color.menu_title,
+        #     alignment=tcod.CENTER,
+        # )
 
         menu_width = 24
         for i, text in enumerate(
             ["[N] Play a new game", "[C] Continue last game", "[Q] Quit"]
         ):
             console.print(
-                console.width // 2,
-                console.height // 2 - 2 + i,
+                2,
+                console.height // 2 + i,
                 text.ljust(menu_width),
                 fg=color.menu_text,
                 bg=color.black,
-                alignment=tcod.CENTER,
+                alignment=tcod.LEFT,
                 bg_blend=tcod.BKGND_ALPHA(64),
             )
 

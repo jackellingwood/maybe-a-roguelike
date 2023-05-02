@@ -72,9 +72,9 @@ class Engine:
                 bar_color=color.bar_ammo
             )
 
-        render_functions.render_dungeon_level(
+        render_functions.render_tower_level(
             console=console,
-            dungeon_level=self.game_world.current_floor,
+            tower_level=self.game_world.current_floor,
             location=(0, 47),
         )
 
