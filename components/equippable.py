@@ -20,21 +20,27 @@ class Equippable(BaseComponent):
         power_bonus: int = 0,
         ranged_bonus: int = 0,
         defense_bonus: int = 0,
+        accuracy_bonus: int = 0,
         durability: int = 255,
         max_ammo: int = 255,
-        fully_accurate: bool = False
+        fully_accurate: bool = False,
+        unjammable: bool = False
     ):
         self.equipment_type = equipment_type
 
         self.power_bonus = power_bonus
         self.ranged_bonus = ranged_bonus
         self.defense_bonus = defense_bonus
+        self.accuracy_bonus = accuracy_bonus
 
         self.durability = durability
 
         self.max_ammo = max_ammo
         self.ammo = max_ammo
         self.fully_accurate = fully_accurate
+        self.unjammable = unjammable
+
+        self.is_jammed = False
 
     def decrement_ammo(self):
         if self.ammo > 0:
@@ -54,6 +60,16 @@ class Equippable(BaseComponent):
             entity.parent.parent.equipment.unequip_from_slot(entity.equippable.equipment_type.name.lower(), False)
             inventory.items.remove(entity)
 
+    def unjam(self):
+        entity = self.parent
+        self.is_jammed = False
+        self.engine.message_log.add_message(f"You carefully unjam your {entity.name}.")
+
+    def jam(self):
+        entity = self.parent
+        self.is_jammed = True
+        self.engine.message_log.add_message(f"Your {entity.name} jams!", color.red)
+
 
 class BrassKnuckles(Equippable):
     def __init__(self) -> None:
@@ -66,11 +82,11 @@ class Knife(Equippable):
 
 class Pistol(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=2, max_ammo=6, durability=24)
+        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=4, max_ammo=6, durability=24)
 
 class Rifle(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=4, max_ammo=12, durability=36)
+        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=6, max_ammo=12, durability=36)
 
 
 class LightArmor(Equippable):
@@ -88,7 +104,13 @@ class Lightsaber(Equippable):
 
 class BFG(Equippable):
     def __init__(self) -> None:
-        super().__init__(equipment_type=EquipmentType.GUN, ranged_bonus=9999, max_ammo=9999, fully_accurate=True, durability=9999)
+        super().__init__(
+            equipment_type=EquipmentType.GUN,
+            ranged_bonus=9999, max_ammo=9999,
+            fully_accurate=True,
+            unjammable=True,
+            durability=9999
+        )
 
 class PlotArmor(Equippable):
     def __init__(self) -> None:

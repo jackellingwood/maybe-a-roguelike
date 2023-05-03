@@ -11,6 +11,7 @@ from actions import (
     Action,
     BumpAction,
     PickupAction,
+    UnjamAction,
     WaitAction
 )
 import color
@@ -255,8 +256,8 @@ class LevelUpEventHandler(AskUserEventHandler):
         console.draw_frame(
             x=x,
             y=0,
-            width=35,
-            height=8,
+            width=38,
+            height=9,
             title=self.TITLE,
             clear=True,
             fg=(255, 255, 255),
@@ -281,19 +282,26 @@ class LevelUpEventHandler(AskUserEventHandler):
             y=6,
             string=f"c) Armor (+1 defense, from {self.engine.player.fighter.defense})",
         )
+        console.print(
+            x=x + 1,
+            y=7,
+            string=f"d) Accuracy (+0.25 accuracy, from {self.engine.player.fighter.accuracy_mult})",
+        )
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
         player = self.engine.player
         key = event.sym
         index = key - tcod.event.K_a
 
-        if 0 <= index <= 2:
+        if 0 <= index <= 3:
             if index == 0:
                 player.level.increase_max_hp()
             elif index == 1:
                 player.level.increase_power()
-            else:
+            elif index == 2:
                 player.level.increase_defense()
+            else:
+                player.level.increase_accuracy()
         else:
             self.engine.message_log.add_message("Invalid entry.", color.invalid)
 
@@ -484,6 +492,7 @@ class SingleRangedAttackHandler(SelectIndexHandler):
         return self.callback((x, y))
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[ActionOrHandler]:
+        action: Optional[Action] = None
 
         player = self.engine.player
         key = event.sym
@@ -500,6 +509,8 @@ class SingleRangedAttackHandler(SelectIndexHandler):
             return HistoryViewer(self.engine)
         elif key == tcod.event.K_t:
             action = PickupAction(player)
+        elif key == tcod.event.K_u:
+            action = UnjamAction(player)
 
         elif key == tcod.event.K_i:
             return InventoryActivateHandler(self.engine)
@@ -509,6 +520,8 @@ class SingleRangedAttackHandler(SelectIndexHandler):
             return CharacterScreenEventHandler(self.engine)
         elif key == tcod.event.K_SLASH:
             return LookHandler(self.engine)
+
+        return action
 
 class AreaRangedAttackHandler(SelectIndexHandler):
     """Handles targeting an area within a given radius. Any entity within the area will be affected."""
@@ -568,13 +581,13 @@ class MainGameEventHandler(EventHandler):
             return HistoryViewer(self.engine)
         elif key == tcod.event.K_t:
             action = PickupAction(player)
+        elif key == tcod.event.K_u:
+            action = UnjamAction(player)
 
         elif key == tcod.event.K_i:
             return InventoryActivateHandler(self.engine)
         elif key == tcod.event.K_y:
             return InventoryDropHandler(self.engine)
-        elif key == tcod.event.K_c:
-            return CharacterScreenEventHandler(self.engine)
         elif key == tcod.event.K_SLASH:
             return LookHandler(self.engine)
 

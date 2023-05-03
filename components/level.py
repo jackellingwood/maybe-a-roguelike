@@ -72,3 +72,10 @@ class Level(BaseComponent):
         self.engine.message_log.add_message("You feel tankier!")
 
         self.increase_level()
+
+    def increase_accuracy(self, amount: int = 0.25) -> None:
+        self.parent.fighter.base_accuracy += amount
+
+        self.engine.message_log.add_message("Your sharpshooting skills improve!")
+
+        self.increase_level()

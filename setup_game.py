@@ -65,6 +65,10 @@ def new_game() -> Engine:
     pistol.parent = player.inventory
     light_armor.parent = player.inventory
 
+    lightsaber.parent = player.inventory
+    bfg.parent = player.inventory
+    plot_armor.parent = player.inventory
+
     # player.inventory.items.append(brassknuckles)
     # player.equipment.toggle_equip(brassknuckles, add_message=False)
 

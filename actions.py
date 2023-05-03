@@ -156,6 +156,8 @@ class RangedAction(Action):
             raise exceptions.Impossible("Finger guns can't cause any real damage.")
         if not self.entity.equipment.gun.equippable.ammo > 0:
             raise exceptions.Impossible("You're out of ammo.")
+        if self.entity.equipment.gun.equippable.is_jammed:
+            raise exceptions.Impossible("Your gun is jammed!")
 
         dx = target.x - self.entity.x
         dy = target.y - self.entity.y
@@ -164,17 +166,22 @@ class RangedAction(Action):
         if self.entity.equipment.gun.equippable.fully_accurate:
             hit_chance = 1.0
         else:
-            hit_chance = pow(1.15, -distance + 1)
+            hit_chance = pow(1.15, -distance + 1) * self.entity.fighter.accuracy_mult
 
-        self.entity.equipment.gun.equippable.decrement_ammo()
-        self.entity.equipment.gun.equippable.decrement_durability()
+        if self.entity.equipment.gun.equippable.unjammable:
+            jam_chance = 0.0
+        else:
+            jam_chance = 0.1
 
         attack_desc = f"{self.entity.name.capitalize()} shoots at the {target.name}"
         if self.entity is self.engine.player:
             attack_color = color.player_atk
         else:
             attack_color = color.enemy_atk
-        if random.random() < hit_chance:
+        if random.random() < jam_chance:
+            self.entity.equipment.gun.equippable.jam()
+        elif random.random() < hit_chance:
+            self.entity.equipment.gun.equippable.decrement_ammo()
             damage = self.entity.fighter.ranged_power - target.fighter.defense
 
             if damage > 0:
@@ -189,9 +196,11 @@ class RangedAction(Action):
             if target.equipment.armor is not None:
                 target.equipment.armor.equippable.decrement_durability()
         else:
+            self.entity.equipment.gun.equippable.decrement_ammo()
             self.engine.message_log.add_message(
                 f"{attack_desc} but misses!", attack_color
             )
+        self.entity.equipment.gun.equippable.decrement_durability()
 
 
 class PickupAction(Action):
@@ -252,3 +261,15 @@ class EquipAction(Action):
 
     def perform(self) -> None:
         self.entity.equipment.toggle_equip(self.item)
+
+class UnjamAction(Action):
+    def __init__(self, entity: Actor):
+        super().__init__(entity)
+
+    def perform(self) -> None:
+        if self.entity.equipment.gun is None:
+            raise exceptions.Impossible("You have no gun to unjam.")
+        if not self.entity.equipment.gun.equippable.is_jammed:
+            raise exceptions.Impossible(f"Your {self.entity.equipment.gun.name} isn't jammed.")
+
+        self.entity.equipment.gun.equippable.unjam()

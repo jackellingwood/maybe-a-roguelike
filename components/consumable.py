@@ -157,7 +157,7 @@ class AmmoConsumable(Consumable):
 
     def activate(self, action: actions.ItemAction) -> None:
         consumer = action.entity
-        if consumer.equipment.gun.equippable is not None:
+        if consumer.equipment.gun is not None:
             if consumer.equipment.gun.equippable.ammo < consumer.equipment.gun.equippable.max_ammo:
                 if consumer.equipment.gun.equippable.ammo + self.count > consumer.equipment.gun.equippable.max_ammo:
                     consumer.equipment.gun.equippable.ammo = consumer.equipment.gun.equippable.max_ammo

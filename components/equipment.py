@@ -48,6 +48,21 @@ class Equipment(BaseComponent):
         return bonus
 
     @property
+    def accuracy_bonus(self) -> int:
+        bonus = 0
+
+        if self.melee is not None and self.melee.equippable is not None:
+            bonus += self.melee.equippable.accuracy_bonus
+
+        if self.gun is not None and self.gun.equippable is not None:
+            bonus += self.gun.equippable.accuracy_bonus
+
+        if self.armor is not None and self.armor.equippable is not None:
+            bonus += self.armor.equippable.accuracy_bonus
+
+        return bonus
+
+    @property
     def power_bonus(self) -> int:
         bonus = 0
 

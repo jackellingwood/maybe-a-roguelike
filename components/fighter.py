@@ -13,12 +13,20 @@ if TYPE_CHECKING:
 class Fighter(BaseComponent):
     parent: Actor
 
-    def __init__(self, hp: int, base_defense: int, base_power: int):
+    def __init__(
+        self,
+        hp: int,
+        base_defense: int = 0,
+        base_power: int = 1,
+        base_ranged_power: int = 1,
+        base_accuracy: int = 1
+    ):
         self.max_hp = hp
         self._hp = hp
         self.base_defense = base_defense
-        self.base_ranged_power = base_power
         self.base_power = base_power
+        self.base_ranged_power = base_ranged_power
+        self.base_accuracy = base_accuracy
 
     def heal(self, amount: int) -> int:
         if self.hp == self.max_hp:
@@ -57,6 +65,10 @@ class Fighter(BaseComponent):
         return self.base_ranged_power + self.ranged_bonus
 
     @property
+    def accuracy_mult(self) -> int:
+        return self.base_accuracy + self.accuracy_bonus
+
+    @property
     def power(self) -> int:
         return self.base_power + self.power_bonus
 
@@ -78,6 +90,13 @@ class Fighter(BaseComponent):
     def power_bonus(self) -> int:
         if self.parent.equipment:
             return self.parent.equipment.power_bonus
+        else:
+            return 0
+
+    @property
+    def accuracy_bonus(self) -> int:
+        if self.parent.equipment:
+            return self.parent.equipment.accuracy_bonus
         else:
             return 0
 
