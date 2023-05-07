@@ -166,6 +166,7 @@ class AmmoConsumable(Consumable):
                 self.engine.message_log.add_message(
                     f"You reloaded your {consumer.equipment.gun.name}!"
                 )
+                self.consume()
             else:
                 raise Impossible("This gun is fully loaded.")
         else:

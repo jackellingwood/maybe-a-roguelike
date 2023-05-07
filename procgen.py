@@ -30,20 +30,20 @@ max_monsters_by_floor = [
 ]
 
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.stimpak, 35), (entity_factories.ammo_box, 10)],
-    1: [(entity_factories.ammo_box, 15), (entity_factories.brassknuckles, 5)],
-    2: [(entity_factories.tactical_flashlight, 25), (entity_factories.brassknuckles, 10), (entity_factories.light_armor, 10)],
-    4: [(entity_factories.shuriken, 40), (entity_factories.knife, 15), (entity_factories.pistol, 15)],
-    6: [(entity_factories.grenade, 30), (entity_factories.heavy_armor, 25), (entity_factories.rifle, 25)],
+    0: [(entity_factories.stimpak, 40), (entity_factories.ammo_box, 30), (entity_factories.brassknuckles, 15), (entity_factories.pistol, 4), (entity_factories.light_armor, 10), (entity_factories.knife, 1)],
+    1: [(entity_factories.stimpak, 40), (entity_factories.ammo_box, 30), (entity_factories.brassknuckles, 10), (entity_factories.pistol, 5), (entity_factories.light_armor, 5), (entity_factories.knife, 3), (entity_factories.rifle, 2)],
+    2: [(entity_factories.stimpak, 30), (entity_factories.ammo_box, 20), (entity_factories.brassknuckles, 10), (entity_factories.pistol, 5), (entity_factories.light_armor, 5), (entity_factories.knife, 10), (entity_factories.rifle, 5), (entity_factories.heavy_armor, 5), (entity_factories.tactical_flashlight, 10)],
+    4: [(entity_factories.stimpak, 30), (entity_factories.ammo_box, 20), (entity_factories.brassknuckles, 5), (entity_factories.pistol, 2), (entity_factories.light_armor, 3), (entity_factories.knife, 10), (entity_factories.rifle, 5), (entity_factories.heavy_armor, 10), (entity_factories.tactical_flashlight, 5), (entity_factories.shuriken, 10)],
+    6: [(entity_factories.stimpak, 25), (entity_factories.ammo_box, 15), (entity_factories.knife, 10), (entity_factories.rifle, 10), (entity_factories.heavy_armor, 10), (entity_factories.tactical_flashlight, 10), (entity_factories.shuriken, 10), (entity_factories.grenade, 10)],
 
     # 0: [(entity_factories.grenade, 999), (entity_factories.shuriken, 999)],
 }
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.grunt, 80)],
-    3: [(entity_factories.brute, 15)],
-    5: [(entity_factories.brute, 30)],
-    7: [(entity_factories.brute, 60)],
+    0: [(entity_factories.grunt, 100)],
+    3: [(entity_factories.grunt, 80), (entity_factories.brute, 20)],
+    5: [(entity_factories.grunt, 70), (entity_factories.brute, 30)],
+    7: [(entity_factories.grunt, 55), (entity_factories.brute, 45)],
 }
 
 
@@ -65,17 +65,18 @@ def get_entities_at_random(
     number_of_entities: int,
     floor: int,
 ) -> List[Entity]:
-    entity_weighted_chances = {}
 
+    entity_weighted_chances = {}
     for key, values in weighted_chances_by_floor.items():
-        if key > floor:
-            break
-        else:
+        if key <= floor:
+            entity_weighted_chances = {}
             for value in values:
                 entity = value[0]
                 weighted_chance = value[1]
 
                 entity_weighted_chances[entity] = weighted_chance
+        else:
+            break
 
     entities = list(entity_weighted_chances.keys())
     entity_weighted_chance_values = list(entity_weighted_chances.values())

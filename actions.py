@@ -200,7 +200,7 @@ class RangedAction(Action):
             self.engine.message_log.add_message(
                 f"{attack_desc} but misses!", attack_color
             )
-        self.entity.equipment.gun.equippable.decrement_durability()
+        # self.entity.equipment.gun.equippable.decrement_durability()
 
 
 class PickupAction(Action):
