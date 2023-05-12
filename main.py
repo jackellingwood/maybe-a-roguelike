@@ -1,7 +1,6 @@
 import traceback
 
 import sys
-sys.dont_write_bytecode = True
 
 import tcod
 
@@ -10,6 +9,7 @@ import exceptions
 import setup_game
 import input_handlers
 
+sys.dont_write_bytecode = True
 
 def save_game(handler: input_handlers.BaseEventHandler, filename: str) -> None:
     """If the current event handler has an active Engine then save it."""

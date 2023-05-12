@@ -13,6 +13,7 @@ from components.inventory import Inventory
 from components.level import Level
 from game_map import GameMap
 import tile_types
+from playaudio import playaudio
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -219,5 +220,7 @@ def generate_dungeon(
 
         # Finally, append the new room to the list.
         rooms.append(new_room)
+
+    playaudio("audio/jsfxr-newfloor.wav")
 
     return dungeon

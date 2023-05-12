@@ -16,6 +16,7 @@ from actions import (
 )
 import color
 import exceptions
+from playaudio import playaudio
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -399,8 +400,10 @@ class InventoryActivateHandler(InventoryEventHandler):
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
         if item.consumable:
             # Return the action for the selected item.
+            playaudio("audio/jsfxr-select.wav")
             return item.consumable.get_action(self.engine.player)
         elif item.equippable:
+            playaudio("audio/jsfxr-select.wav")
             return actions.EquipAction(self.engine.player, item)
         else:
             return None
@@ -413,6 +416,7 @@ class InventoryDropHandler(InventoryEventHandler):
 
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
         """Yeet this item."""
+        playaudio("audio/jsfxr-select.wav")
         return actions.DropItem(self.engine.player, item)
 
 class SelectIndexHandler(AskUserEventHandler):
@@ -594,7 +598,7 @@ class MainGameEventHandler(EventHandler):
         elif key == tcod.event.K_SPACE:
             return SingleRangedAttackHandler(
                 self.engine,
-                callback=lambda xy: actions.RangedAction(self.engine.player, False, xy)
+                callback=lambda xy: actions.RangedAction(self.engine.player, xy)
             )
 
         # No valid key was pressed

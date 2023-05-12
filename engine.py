@@ -9,6 +9,7 @@ from tcod.map import compute_fov
 
 import color
 import exceptions
+import playaudio
 from message_log import MessageLog
 import render_functions
 

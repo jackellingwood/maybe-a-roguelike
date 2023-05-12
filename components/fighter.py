@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import color
 from components.base_component import BaseComponent
+from playaudio import playaudio
 from render_order import RenderOrder
 
 if TYPE_CHECKING:
@@ -45,6 +46,10 @@ class Fighter(BaseComponent):
 
     def take_damage(self, amount: int) -> None:
         self.hp -= amount
+        if self.hp > 0:
+            playaudio("audio/jsfxr-hit.wav")
+        else:
+            playaudio("audio/jsfxr-kill.wav")
 
     @property
     def hp(self) -> int:

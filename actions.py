@@ -5,6 +5,7 @@ from typing import Optional, Tuple, TYPE_CHECKING
 
 import color
 import exceptions
+from playaudio import playaudio
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -47,6 +48,7 @@ class TakeStairsAction(Action):
                 "You descend the staircase.", color.descend
             )
         else:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("There are no stairs here.")
 
 class ActionWithDirection(Action):
@@ -71,6 +73,10 @@ class ActionWithDirection(Action):
         """Return the actor at this actions destination."""
         return self.engine.game_map.get_actor_at_location(*self.dest_xy)
 
+    @property
+    def actor(self) -> Actor:
+        return self.entity
+
     def perform(self) -> None:
         raise NotImplementedError()
 
@@ -79,6 +85,7 @@ class MeleeAction(ActionWithDirection):
     def perform(self) -> None:
         target = self.target_actor
         if not target:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("Nothing to attack.")
 
         damage = self.entity.fighter.power - target.fighter.defense
@@ -97,7 +104,7 @@ class MeleeAction(ActionWithDirection):
             self.engine.message_log.add_message(
                 f"{attack_desc} for {damage} hit points.", attack_color
             )
-            target.fighter.hp -= damage
+            target.fighter.take_damage(damage)
         else:
             self.engine.message_log.add_message(
                 f"{attack_desc} but does no damage.", attack_color
@@ -112,16 +119,23 @@ class MovementAction(ActionWithDirection):
 
         if not self.engine.game_map.in_bounds(dest_x, dest_y):
             # Destination is out of bounds.
+            if self.actor == self.engine.player:
+                playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("That way is blocked.")
         if not self.engine.game_map.tiles["walkable"][dest_x, dest_y]:
             # Destination is blocked by a tile.
+            if self.actor == self.engine.player:
+                playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("That way is blocked.")
         if self.engine.game_map.get_blocking_entity_at_location(dest_x, dest_y):
             # Destination is blocked by an entity.
+            if self.actor == self.engine.player:
+                playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("That way is blocked.")
 
         self.entity.move(self.dx, self.dy)
-
+        if self.actor == self.engine.player:
+            playaudio("audio/jsfxr-step.wav")
 
 class BumpAction(ActionWithDirection):
     def perform(self) -> None:
@@ -133,7 +147,7 @@ class BumpAction(ActionWithDirection):
 
 class RangedAction(Action):
     def __init__(
-        self, entity: Actor, accurate: bool, target_xy: Optional[Tuple[int, int]] = None,
+        self, entity: Actor, target_xy: Optional[Tuple[int, int]] = None,
     ):
         super().__init__(entity)
         if not target_xy:
@@ -149,14 +163,19 @@ class RangedAction(Action):
         target = self.target_actor
 
         if not target or not self.engine.game_map.visible[target.x, target.y]:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("Nothing to attack.")
         if target is self.entity:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("Can't take the easy way out, I have a mission to do.")
         if self.entity.equipment.gun is None:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("Finger guns can't cause any real damage.")
         if not self.entity.equipment.gun.equippable.ammo > 0:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("You're out of ammo.")
         if self.entity.equipment.gun.equippable.is_jammed:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("Your gun is jammed!")
 
         dx = target.x - self.entity.x
@@ -171,7 +190,7 @@ class RangedAction(Action):
         if self.entity.equipment.gun.equippable.unjammable:
             jam_chance = 0.0
         else:
-            jam_chance = 0.1
+            jam_chance = 0.05
 
         attack_desc = f"{self.entity.name.capitalize()} shoots at the {target.name}"
         if self.entity is self.engine.player:
@@ -180,6 +199,7 @@ class RangedAction(Action):
             attack_color = color.enemy_atk
         if random.random() < jam_chance:
             self.entity.equipment.gun.equippable.jam()
+            playaudio("audio/jam.wav")
         elif random.random() < hit_chance:
             self.entity.equipment.gun.equippable.decrement_ammo()
             damage = self.entity.fighter.ranged_power - target.fighter.defense
@@ -188,18 +208,20 @@ class RangedAction(Action):
                 self.engine.message_log.add_message(
                     f"{attack_desc} for {damage} hit points.", attack_color
                 )
-                target.fighter.hp -= damage
+                target.fighter.take_damage(damage)
             else:
                 self.engine.message_log.add_message(
                     f"{attack_desc} but does no damage.", attack_color
                 )
             if target.equipment.armor is not None:
                 target.equipment.armor.equippable.decrement_durability()
+            playaudio("audio/jsfxr-shoot.wav")
         else:
             self.entity.equipment.gun.equippable.decrement_ammo()
             self.engine.message_log.add_message(
                 f"{attack_desc} but misses!", attack_color
             )
+            playaudio("audio/jsfxr-shoot.wav")
         # self.entity.equipment.gun.equippable.decrement_durability()
 
 
@@ -217,6 +239,7 @@ class PickupAction(Action):
         for item in self.engine.game_map.items:
             if actor_location_x == item.x and actor_location_y == item.y:
                 if len(inventory.items) >= inventory.capacity:
+                    playaudio("audio/jsfxr-error.wav")
                     raise exceptions.Impossible("Your inventory is full.")
 
                 self.engine.game_map.entities.remove(item)
@@ -224,8 +247,9 @@ class PickupAction(Action):
                 inventory.items.append(item)
 
                 self.engine.message_log.add_message(f"You took the {item.name}!")
+                playaudio("audio/jsfxr-pickup.wav")
                 return
-
+        playaudio("audio/jsfxr-error.wav")
         raise exceptions.Impossible("There is nothing here to take.")
 
 class ItemAction(Action):
@@ -268,8 +292,11 @@ class UnjamAction(Action):
 
     def perform(self) -> None:
         if self.entity.equipment.gun is None:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible("You have no gun to unjam.")
         if not self.entity.equipment.gun.equippable.is_jammed:
+            playaudio("audio/jsfxr-error.wav")
             raise exceptions.Impossible(f"Your {self.entity.equipment.gun.name} isn't jammed.")
 
         self.entity.equipment.gun.equippable.unjam()
+        playaudio("audio/unjam.wav")

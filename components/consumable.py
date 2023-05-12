@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import winsound
 from typing import Optional, TYPE_CHECKING
 
 import actions
@@ -13,6 +14,7 @@ from input_handlers import (
     AreaRangedAttackHandler,
     SingleRangedAttackHandler,
 )
+from playaudio import playaudio
 
 if TYPE_CHECKING:
     from entity import Actor, Item
@@ -167,6 +169,7 @@ class AmmoConsumable(Consumable):
                     f"You reloaded your {consumer.equipment.gun.name}!"
                 )
                 self.consume()
+                playaudio("audio/reload.wav")
             else:
                 raise Impossible("This gun is fully loaded.")
         else:

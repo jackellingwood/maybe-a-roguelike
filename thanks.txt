@@ -1,0 +1,4 @@
+Sounds used:
+https://mixkit.co/free-sound-effects/gun/ "Handgun click" and "Handgun release" and "Handgun movement"
+https://soundbible.com/1382-9mm-Glock-17.html "9mm Glock 17"
+I used sfxr.me to generate many sound effects

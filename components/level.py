@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from components.base_component import BaseComponent
+from playaudio import playaudio
 
 if TYPE_CHECKING:
     from entity import Actor
@@ -50,6 +51,7 @@ class Level(BaseComponent):
         self.current_xp -= self.experience_to_next_level
 
         self.current_level += 1
+        playaudio("audio/jsfxr-pickup.wav")
 
     def increase_max_hp(self, amount: int = 20) -> None:
         self.parent.fighter.max_hp += amount
