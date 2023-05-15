@@ -31,20 +31,20 @@ max_monsters_by_floor = [
 ]
 
 item_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.stimpak, 40), (entity_factories.ammo_box, 30), (entity_factories.brassknuckles, 15), (entity_factories.pistol, 4), (entity_factories.light_armor, 10), (entity_factories.knife, 1)],
-    1: [(entity_factories.stimpak, 40), (entity_factories.ammo_box, 30), (entity_factories.brassknuckles, 10), (entity_factories.pistol, 5), (entity_factories.light_armor, 5), (entity_factories.knife, 3), (entity_factories.rifle, 2)],
-    2: [(entity_factories.stimpak, 30), (entity_factories.ammo_box, 20), (entity_factories.brassknuckles, 10), (entity_factories.pistol, 5), (entity_factories.light_armor, 5), (entity_factories.knife, 10), (entity_factories.rifle, 5), (entity_factories.heavy_armor, 5), (entity_factories.tactical_flashlight, 10)],
-    4: [(entity_factories.stimpak, 30), (entity_factories.ammo_box, 20), (entity_factories.brassknuckles, 5), (entity_factories.pistol, 2), (entity_factories.light_armor, 3), (entity_factories.knife, 10), (entity_factories.rifle, 5), (entity_factories.heavy_armor, 10), (entity_factories.tactical_flashlight, 5), (entity_factories.shuriken, 10)],
-    6: [(entity_factories.stimpak, 25), (entity_factories.ammo_box, 15), (entity_factories.knife, 10), (entity_factories.rifle, 10), (entity_factories.heavy_armor, 10), (entity_factories.tactical_flashlight, 10), (entity_factories.shuriken, 10), (entity_factories.grenade, 10)],
+    1: [(entity_factories.stimpak, 40), (entity_factories.ammo_box, 30), (entity_factories.brassknuckles, 15), (entity_factories.pistol, 4), (entity_factories.light_armor, 10), (entity_factories.knife, 1)],
+    2: [(entity_factories.stimpak, 40), (entity_factories.ammo_box, 30), (entity_factories.brassknuckles, 10), (entity_factories.pistol, 5), (entity_factories.light_armor, 5), (entity_factories.knife, 3), (entity_factories.rifle, 2)],
+    3: [(entity_factories.stimpak, 30), (entity_factories.ammo_box, 20), (entity_factories.brassknuckles, 10), (entity_factories.pistol, 5), (entity_factories.light_armor, 5), (entity_factories.knife, 10), (entity_factories.rifle, 5), (entity_factories.heavy_armor, 5), (entity_factories.tactical_flashlight, 10)],
+    5: [(entity_factories.stimpak, 30), (entity_factories.ammo_box, 20), (entity_factories.brassknuckles, 5), (entity_factories.pistol, 2), (entity_factories.light_armor, 3), (entity_factories.knife, 10), (entity_factories.rifle, 5), (entity_factories.heavy_armor, 10), (entity_factories.tactical_flashlight, 5), (entity_factories.shuriken, 10)],
+    7: [(entity_factories.stimpak, 25), (entity_factories.ammo_box, 15), (entity_factories.knife, 10), (entity_factories.rifle, 10), (entity_factories.heavy_armor, 10), (entity_factories.tactical_flashlight, 10), (entity_factories.shuriken, 10), (entity_factories.grenade, 10)],
 
     # 0: [(entity_factories.grenade, 999), (entity_factories.shuriken, 999)],
 }
 
 enemy_chances: Dict[int, List[Tuple[Entity, int]]] = {
-    0: [(entity_factories.grunt, 100)],
-    3: [(entity_factories.grunt, 80), (entity_factories.brute, 20)],
-    5: [(entity_factories.grunt, 70), (entity_factories.brute, 30)],
-    7: [(entity_factories.grunt, 55), (entity_factories.brute, 45)],
+    1: [(entity_factories.grunt, 100)],
+    4: [(entity_factories.grunt, 80), (entity_factories.brute, 20)],
+    6: [(entity_factories.grunt, 70), (entity_factories.brute, 30)],
+    8: [(entity_factories.grunt, 55), (entity_factories.brute, 45)],
 }
 
 
