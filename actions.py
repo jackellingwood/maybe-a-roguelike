@@ -106,9 +106,10 @@ class MeleeAction(ActionWithDirection):
             )
             target.fighter.take_damage(damage)
         else:
-            self.engine.message_log.add_message(
-                f"{attack_desc} but does no damage.", attack_color
-            )
+            # self.engine.message_log.add_message(
+            #     f"{attack_desc} but does no damage.", attack_color
+            # )
+            target.fighter.take_damage(1)
         if target.equipment.armor is not None:
             target.equipment.armor.equippable.decrement_durability()
 
@@ -210,9 +211,10 @@ class RangedAction(Action):
                 )
                 target.fighter.take_damage(damage)
             else:
-                self.engine.message_log.add_message(
-                    f"{attack_desc} but does no damage.", attack_color
-                )
+                # self.engine.message_log.add_message(
+                #     f"{attack_desc} but does no damage.", attack_color
+                # )
+                target.fighter.take_damage(1)
             if target.equipment.armor is not None:
                 target.equipment.armor.equippable.decrement_durability()
             playaudio("audio/jsfxr-shoot.wav")
