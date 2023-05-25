@@ -32,8 +32,8 @@ class Level(BaseComponent):
 
     @property
     def requires_level_up(self) -> bool:
-        return self.current_xp > self.experience_to_next_level
-
+        # return self.current_xp > self.experience_to_next_level
+        return False #disabling leveling up, i don't like linear player progression
     def add_xp(self, xp: int) -> None:
         if xp == 0 or self.level_up_base == 0:
             return
